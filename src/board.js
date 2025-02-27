@@ -2,11 +2,17 @@ const { PUZZLE_SIZE } = require("../consts")
 
 class Board {
   constructor (options = {}) {
-    const { initialState, puzzleSize = PUZZLE_SIZE } = options
+    const {
+      initialState,
+      puzzleSize = initialState ? initialState.length : PUZZLE_SIZE
+    } = options
+
+    if (puzzleSize < 2) {
+      throw new Error('Puzzle size must be at least 2')
+    }
 
     this.puzzleSize = puzzleSize
     this.tiles = initialState || this.generateRandomBoard()
-
   }
 
   formatBoard(numbers) {
