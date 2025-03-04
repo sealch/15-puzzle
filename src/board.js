@@ -12,14 +12,14 @@ class Board {
     }
 
     this.puzzleSize = puzzleSize
-    this.tiles = initialState || this.generateRandomBoard()
+    this.tiles = initialState || this.#generateRandomBoard()
   }
 
-  formatBoard(numbers) {
+  #formatBoard(numbers) {
     return Array.from({ length: this.puzzleSize }, (_, i) => numbers.slice(i * this.puzzleSize, (i + 1) * this.puzzleSize))
   }
 
-  generateRandomBoard() {
+  #generateRandomBoard() {
     const puzzleTiles = this.puzzleSize * this.puzzleSize - 1
 
     const numbers = Array.from({ length: puzzleTiles }, (_, i) => i + 1)
@@ -28,16 +28,16 @@ class Board {
     let formattedBoard
 
     do {
-      this.shuffle(numbers)
+      this.#shuffle(numbers)
 
-      formattedBoard = this.formatBoard(numbers)
+      formattedBoard = this.#formatBoard(numbers)
       this.tiles = formattedBoard
-    } while (!this.isSolvable(numbers) || this.isWon())
+    } while (!this.#isSolvable(numbers) || this.isWon())
 
     return formattedBoard
   }
 
-  shuffle(numbers) {
+  #shuffle(numbers) {
     for (let i = numbers.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
 
@@ -50,7 +50,7 @@ class Board {
     return numbers
   }
 
-  isSolvable(numbers) {
+  #isSolvable(numbers) {
     let inversions = 0
 
     const emptyTileIndex = numbers.indexOf(null)
@@ -92,7 +92,7 @@ class Board {
     return this.tiles
   }
 
-  findTilePosition(value) {
+  #findTilePosition(value) {
     for (let i = 0; i < this.puzzleSize; i++) {
       for (let j = 0; j < this.puzzleSize; j++) {
         if (this.tiles[i][j] === value) {
@@ -107,8 +107,8 @@ class Board {
       return false
     }
 
-    const [emptyRow, emptyCol] = this.findTilePosition(null)
-    const [targetRow, targetCol] = this.findTilePosition(value)
+    const [emptyRow, emptyCol] = this.#findTilePosition(null)
+    const [targetRow, targetCol] = this.#findTilePosition(value)
 
     return (Math.abs(emptyRow - targetRow) === 1 && emptyCol === targetCol) ||
       (Math.abs(emptyCol - targetCol) === 1 && emptyRow === targetRow)
@@ -119,8 +119,8 @@ class Board {
       return false
     }
 
-    const [emptyRow, emptyCol] = this.findTilePosition(null)
-    const [targetRow, targetCol] = this.findTilePosition(value)
+    const [emptyRow, emptyCol] = this.#findTilePosition(null)
+    const [targetRow, targetCol] = this.#findTilePosition(value)
 
     this.tiles[emptyRow][emptyCol] = value
     this.tiles[targetRow][targetCol] = null
