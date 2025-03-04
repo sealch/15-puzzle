@@ -1,6 +1,9 @@
 const { PUZZLE_SIZE } = require("../consts")
 
 class Board {
+  #tiles
+  #puzzleSize
+
   constructor (options = {}) {
     const {
       initialState,
@@ -11,16 +14,16 @@ class Board {
       throw new Error('Puzzle size must be at least 2')
     }
 
-    this.puzzleSize = puzzleSize
-    this.tiles = initialState || this.#generateRandomBoard()
+    this.#puzzleSize = puzzleSize
+    this.#tiles = initialState || this.#generateRandomBoard()
   }
 
   #formatBoard(numbers) {
-    return Array.from({ length: this.puzzleSize }, (_, i) => numbers.slice(i * this.puzzleSize, (i + 1) * this.puzzleSize))
+    return Array.from({ length: this.#puzzleSize }, (_, i) => numbers.slice(i * this.#puzzleSize, (i + 1) * this.#puzzleSize))
   }
 
   #generateRandomBoard() {
-    const puzzleTiles = this.puzzleSize * this.puzzleSize - 1
+    const puzzleTiles = this.#puzzleSize * this.#puzzleSize - 1
 
     const numbers = Array.from({ length: puzzleTiles }, (_, i) => i + 1)
     numbers.push(null)
@@ -31,7 +34,7 @@ class Board {
       this.#shuffle(numbers)
 
       formattedBoard = this.#formatBoard(numbers)
-      this.tiles = formattedBoard
+      this.#tiles = formattedBoard
     } while (!this.#isSolvable(numbers) || this.isWon())
 
     return formattedBoard
@@ -65,10 +68,10 @@ class Board {
       }
     }
 
-    if (this.puzzleSize % 2 !== 0) {
+    if (this.#puzzleSize % 2 !== 0) {
       return inversions % 2 === 0
     } else {
-      const emptyRowFromBottom = this.puzzleSize - Math.floor(emptyTileIndex / this.puzzleSize)
+      const emptyRowFromBottom = this.#puzzleSize - Math.floor(emptyTileIndex / this.#puzzleSize)
 
       const isEmptyRowEven = emptyRowFromBottom % 2 === 0
       const areInversionsEven = inversions % 2 === 0
@@ -78,10 +81,10 @@ class Board {
   }
 
   isWon() {
-    if (!this.tiles) return false
+    if (!this.#tiles) return false
 
 
-    const numbers = this.tiles.flat()
+    const numbers = this.#tiles.flat()
 
     const lastValue = numbers.pop()
 
@@ -89,13 +92,13 @@ class Board {
   }
 
   getTiles() {
-    return this.tiles
+    return this.#tiles
   }
 
   #findTilePosition(value) {
-    for (let i = 0; i < this.puzzleSize; i++) {
-      for (let j = 0; j < this.puzzleSize; j++) {
-        if (this.tiles[i][j] === value) {
+    for (let i = 0; i < this.#puzzleSize; i++) {
+      for (let j = 0; j < this.#puzzleSize; j++) {
+        if (this.#tiles[i][j] === value) {
           return [i, j]
         }
       }
@@ -103,7 +106,7 @@ class Board {
   }
 
   isValidMove(value) {
-    if (value > this.puzzleSize * this.puzzleSize - 1) {
+    if (value > this.#puzzleSize * this.#puzzleSize - 1) {
       return false
     }
 
@@ -122,8 +125,8 @@ class Board {
     const [emptyRow, emptyCol] = this.#findTilePosition(null)
     const [targetRow, targetCol] = this.#findTilePosition(value)
 
-    this.tiles[emptyRow][emptyCol] = value
-    this.tiles[targetRow][targetCol] = null
+    this.#tiles[emptyRow][emptyCol] = value
+    this.#tiles[targetRow][targetCol] = null
 
     return true
   }
